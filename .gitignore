@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# 本机 profile 快照，含个人配置，不入库
+backups/
+
+# 临时探针与打包产物
+.probe/
+.tmp/
+*.tgz
+
+# pnpm 本地缓存
+.pnpm-store/

@@ -1,0 +1,66 @@
+{
+  "_comment": "记录 .agents/skills/ 下技能的来源与校验和。此文件必须放在 skills/ 之外：skills/ 顶层任何 .md 文件都会被 DSH 当作技能解析。",
+  "installedAt": "2026-10-02",
+  "updatedAt": "2026-10-03",
+  "dshVersion": "0.2.0-rc.2",
+  "target": ".agents/skills",
+  "source": {
+    "package": "@deepseek-ai/dsh-agent-preset",
+    "version": "0.1.7-rc.2",
+    "license": "MIT",
+    "skillsDir": "/Users/mac/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/dsh-agent-preset/skills",
+    "note": "官方技能随 @deepseek-ai/dsh-agent-preset 发布，默认只由 creator(cordis) preset 通过 skill-filesystem 挂载。本工作区把它们复制成项目级技能，使任何 profile 都能用。"
+  },
+  "thirdParty": [
+    {
+      "package": "dsh-github-skills",
+      "version": "0.2.1",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/Starfie1d1272/dsh-github-skills",
+      "tarball": "https://registry.npmjs.org/dsh-github-skills/-/dsh-github-skills-0.2.1.tgz",
+      "note": "第三方技能包，非 DeepSeek 官方。原包以 DSH bundle 插件形式注册这四个技能；本工作区改为复制成项目级技能，内容未做改动。上游本身衍生自 OpenAI Codex 的 GitHub 插件，署名与许可证随技能放在各自 licenses/ 子目录，另在 docs/third-party/dsh-github-skills/ 留一份。",
+      "skills": [
+        "github",
+        "gh-address-comments",
+        "gh-fix-ci",
+        "gh-publish"
+      ]
+    }
+  ],
+  "skills": [
+    "cordis-plugin-development",
+    "editing-cordis-compositions",
+    "cordis-composition-reference",
+    "github",
+    "gh-address-comments",
+    "gh-fix-ci",
+    "gh-publish"
+  ],
+  "files": {
+    "cordis-composition-reference/SKILL.md": "6583a81d9f4de07032ebdee0d5ea1a925067277805798936a5297cf2bac4f5e3",
+    "cordis-composition-reference/references/packages.md": "bacb47fe3a3be7e667fc49e6e626b40d8b7bb2c4aad2b6c9a1c6ce14b3612b4c",
+    "cordis-plugin-development/SKILL.md": "acb0782654c12a5a850a233fcfdc843f173f895a7f35070c08d7b6f19ff07bf7",
+    "cordis-plugin-development/references/host-plugin.md": "ccfc3e1c7a98023f391eb24ad2f1cee1bcb984a26e77bcd994090041049eaa4b",
+    "cordis-plugin-development/references/mcp-bundle.md": "944b431411ba50582d690f03aa239044556d7a1395d50d3db69cff3920f61ff3",
+    "cordis-plugin-development/references/practices.md": "e41e15e6062b6e382dd500f066bde5e458142d2ecccfb4655fdffbdc41c8f7ae",
+    "cordis-plugin-development/references/ui-plugin.md": "830a1710af97e3930ba5f29062e46ff78f7be3337995fbb20e85867f80339e23",
+    "cordis-plugin-development/references/verification.md": "25b24964778652c2ae675b496ead3025dd8246d50ff9f8b167aee0d053a99f68",
+    "cordis-plugin-development/templates/decoration/client.js": "bb17be70ae65f05d2cb26dd18f54448d706a89a1ba4da7ee3fe46ed46ac89f69",
+    "cordis-plugin-development/templates/decoration/cordis.patch.yml": "542639675b704bbdfa7c6694011c6e57d05c403e4499baa35731902a9063e7fc",
+    "cordis-plugin-development/templates/decoration/index.js": "87edbe4014ee569545ade02f7aa1915f2d2135ffebad84016a247d4542d6f39a",
+    "cordis-plugin-development/templates/decoration/package.json": "a5c7505401c3ff0d97ef8305853533810be9672cd2322c39c630e8a5c3cc1201",
+    "cordis-plugin-development/templates/mcp/cordis.patch.yml": "9a828bb02bd1aa07a6f873d823b725e85279b7ddf4bebbba40aa391ac501e9b5",
+    "cordis-plugin-development/templates/mcp/package.json": "7ca0d8b112887f2619f387054cf6f926079addf4fe59dd5a2bc36078c4a5352e",
+    "editing-cordis-compositions/SKILL.md": "974cc1e115bf07a8de7229c20a7e7aa7fa5cc5bfe0fbc22f86b5bc776a7298e6",
+    "gh-address-comments/SKILL.md": "20ccc961474ada656499208c03444d3e63bb44d2569eef4b8ff1549bff495b3b",
+    "gh-address-comments/scripts/fetch-review-threads.mjs": "5f782f4ddea4b9d4c6e3648b4da4f8404ae96a2fde0434a5d9c859a3e1c512d6",
+    "gh-fix-ci/SKILL.md": "2717de20135117a0f40f54946e61add45edcf82382010074eb406a0e708e3570",
+    "gh-fix-ci/scripts/inspect-pr-checks.mjs": "ab7ca39300e93fd5b9e915294f0c818fd502c2d09659e51e5b81e25198de884a",
+    "gh-publish/SKILL.md": "9aadb0ed958d0ddbe531133215d6763a0028316c4ba9c661cbbc0226a3b28925",
+    "gh-publish/scripts/publish-preflight.mjs": "f1da461cfbef33f1c5da9fef4a9b76cf7bbfd248119331f38c9e8f44ee2abde6",
+    "github/SKILL.md": "0504fe9f1fbec829429caa9376cc9ca053b407961711f9ac82909db3864db1e3"
+  },
+  "resync": "SRC=\"$(find /Users/mac/.dsh/profiles/node_modules /Users/mac/.npm/_npx -maxdepth 6 -type d -path '*@deepseek-ai/dsh-agent-preset/skills' 2>/dev/null | head -1)\"; DST=/Users/mac/code/dsh-plugins/.agents/skills; for s in cordis-plugin-development editing-cordis-compositions cordis-composition-reference; do rm -rf \"$DST/$s\"; cp -R \"$SRC/$s\" \"$DST/$s\"; done",
+  "resyncThirdParty": "cd /tmp && rm -rf dsh-github-skills-0.2.1.tgz package && curl -sLO https://registry.npmjs.org/dsh-github-skills/-/dsh-github-skills-0.2.1.tgz && tar -xzf dsh-github-skills-0.2.1.tgz && DST=/Users/mac/code/dsh-plugins/.agents/skills && for s in github gh-address-comments gh-fix-ci gh-publish; do rm -rf \"$DST/$s\"; cp -R \"package/skills/$s\" \"$DST/$s\"; mkdir -p \"$DST/$s/licenses\"; cp package/LICENSE package/THIRD_PARTY_NOTICES.md \"$DST/$s/licenses/\"; done && cp package/LICENSE package/THIRD_PARTY_NOTICES.md /Users/mac/code/dsh-plugins/docs/third-party/dsh-github-skills/",
+  "verify": "cd /Users/mac/code/dsh-plugins/.agents/skills && find . -type f -not -path '*/licenses/*' | sort | xargs shasum -a 256"
+}
