@@ -10,19 +10,12 @@ npm 包。插件之间不共享代码。某个插件要单独发布时，用
 
 ```
 plugins/                          所有插件。一个目录 = 一个独立 npm 包
-plugins/hello-dsh/                最小可运行样板
 .agents/skills/                   项目级技能，DSH 自动扫描
 .agents/skills.lock.json          技能的来源、版本与校验和
 docs/dsh-notes.md                 本机实测细节：环境、验证回路、已知坑
 docs/third-party/                 第三方内容的许可证与归属
 AGENTS.md                         给 Agent 的工作区总纲
 ```
-
-## 插件
-
-| 插件 | 包名 | 说明 |
-|---|---|---|
-| [hello-dsh](plugins/hello-dsh/) | `dsh-plugin-hello` | 最小可运行样板。注册一个 `hello_echo` 工具，演示 `name` / `inject` / `Config` / `apply` 四件套 |
 
 ## 技能
 
@@ -56,10 +49,12 @@ AGENTS.md                         给 Agent 的工作区总纲
 # dsh 不在 PATH
 DSH="/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh"
 
-# 验证插件（由浅入深，前一级过了再进下一级）
-P=~/code/dsh-plugins/plugins/hello-dsh
-"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config        | grep -A4 hello-dsh-dev
-"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config-schema | grep -A5 hello-dsh-dev
+# 验证某个插件。由浅入深，前一级过了再进下一级。
+P=~/code/dsh-plugins/plugins/<插件目录>
+ID=<插件 dev patch 里的 id>
+
+"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config        | grep -A4 "$ID"
+"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config-schema | grep -A5 "$ID"
 ```
 
 `gh` 用 `brew install gh` 安装，用之前先 `gh auth login`。
@@ -68,7 +63,7 @@ P=~/code/dsh-plugins/plugins/hello-dsh
 
 ## 许可证
 
-本仓库自己的插件代码：见各插件目录。
+本仓库自己的代码用 MIT，见 [LICENSE](LICENSE)。
 
 第三方内容保留原许可证：
 

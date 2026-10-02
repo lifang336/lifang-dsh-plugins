@@ -29,12 +29,12 @@ dsh-plugins/                        单体仓库，公开：lifang-dsh-plugins
 ├── docs/dsh-notes.md               本文件
 ├── docs/third-party/               第三方内容的许可证与归属声明
 ├── plugins/                        所有插件。一个目录 = 一个独立 npm 包
-│   └── hello-dsh/                  最小可运行插件样板
+│   └── <插件>/                     每个插件都是这个结构
 │       ├── lib/index.js            插件本体：name / inject / Config / apply
 │       ├── cordis.patch.yml        bundle 层：正式安装后由 profile 加载
 │       ├── dev.patch.yml           开发 overlay：不安装，用 --patch 直接挂
 │       ├── package.json            包清单：dsh.bundle.patch 指向 bundle 层
-│       ├── README.md               样板的详细说明与实测记录
+│       ├── README.md               插件的说明与实测记录
 │       └── node_modules/@deepseek-ai/  软链到宿主包，供开发期解析
 └── .agents/
     ├── skills/                     项目级技能（DSH 自动扫描）
@@ -101,24 +101,26 @@ DSH 升级后，用 `.agents/skills.lock.json` 里的 `resync` 命令重新复�
 
 ```sh
 DSH="/Applications/DeepSeek Harness.app/Contents/Resources/runtime/cli/bin/dsh"
-P=~/code/dsh-plugins/plugins/hello-dsh
+P=~/code/dsh-plugins/plugins/<插件目录>
+ID=<插件 dev patch 里的 id>
 
 # ① 层叠加：确认那行进了配置树。不执行插件代码。
-"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config | grep -A4 hello-dsh-dev
+"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config | grep -A4 "$ID"
 
 # ② 模块导入 + Config schema：确认能 import、schema 能解析。不启动应用、不调模型。
-"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config-schema | grep -A5 hello-dsh-dev
+"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config-schema | grep -A5 "$ID"
 
-# ③ 真实运行：确认工具注册成功、模型能调到。
-"$DSH" --profile headless --patch "$P/dev.patch.yml" \
-  "调用 hello_echo 工具，text 传「插件跑通了」，times=2。只回复工具返回值。"
+# ③ 真实运行：确认插件真的加载、工具真的注册、模型能调到。
+"$DSH" --profile headless --patch "$P/dev.patch.yml" "<一句会让插件出效果的话>"
 
 # ④ 正式安装到 profile，之后不带 --patch 启动也会加载。
 "$DSH" plugin --profile headless add "$P"
 ```
 
-第 ③ 步的 stderr 会打印 `[hello-dsh] loaded (...)`。这是「插件是否被加载」的确认信号。
-第 ③ 步的预期输出是 `你好｜插件跑通了 插件跑通了`（见 `plugins/hello-dsh/README.md`）。
+② 里出现 `"status": "error"` 就是模块导入失败，真正的原因在 stderr。
+最常见的是宿主包软链失效，见「已知坑」第 3 条。
+
+插件加载成功的确认信号是它自己用 `console.error` 打的那行日志（见「已知坑」第 1 条）。
 
 ### 沙箱要求：四步都要 Full access
 
@@ -145,7 +147,7 @@ P=~/code/dsh-plugins/plugins/hello-dsh
 写法有分工：`AGENTS.md` 只放「失败时不出声」的触发条件，也就是那三条。
 这里是完整清单，含报错原文和修法。改一条坑时，两处一起看。
 
-1. **`ctx.logger` 不输出。** 据 `hello-dsh` 实测记录，本机默认配置下
+1. **`ctx.logger` 不输出。** 据本机实测记录，默认配置下
    `ctx.logger('x')` 的 `debug`/`info`/`warn`/`error` 都不进 stderr。
    要确认加载，用 `console.error`。原因未查明。
 2. **`desktop` profile 不能由 CLI 读取。**

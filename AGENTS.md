@@ -20,7 +20,6 @@
 
 ```
 plugins/                   所有插件。一个目录 = 一个独立可安装的 npm 包
-plugins/hello-dsh/         最小可运行样板，学习起点
 .agents/skills/            项目级技能，DSH 自动扫描
 .agents/skills.lock.json   技能的来源与校验和
 docs/dsh-notes.md          本机实测细节：环境、验证回路、全部坑
@@ -46,10 +45,11 @@ backups/                   本机 profile 快照，不入 git
 ## 改完代码就跑
 
 ```sh
-P=~/code/dsh-plugins/plugins/hello-dsh
+P=~/code/dsh-plugins/plugins/<插件目录>
+ID=<插件 dev patch 里的 id>
 
-"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config        | grep -A4 hello-dsh-dev
-"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config-schema | grep -A5 hello-dsh-dev
+"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config        | grep -A4 "$ID"
+"$DSH" --profile headless --patch "$P/dev.patch.yml" --dump-config-schema | grep -A5 "$ID"
 ```
 
 两条都过，才算配置和语法没坏。**这些命令要 Full access。** 原因见 `docs/dsh-notes.md`。
