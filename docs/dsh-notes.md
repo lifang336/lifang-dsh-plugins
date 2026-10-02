@@ -14,8 +14,8 @@
 | `$DSH_HOME` | `/Users/mac/.dsh` |
 | 当前 profile | `desktop`（Web GUI，仅 Electron 可管理） |
 | 可用 profile | `desktop`、`headless`、`web` |
-| 宿主包目录 | `/Users/mac/.dsh/profiles/node_modules/@deepseek-ai/`（240 个包，软链到 npx 缓存） |
-| npx 缓存副本 | `/Users/mac/.npm/_npx/1e7f6d9597241db0/node_modules/@deepseek-ai/` |
+| 宿主包目录 | `/Users/mac/.dsh/profiles/node_modules/@deepseek-ai/`（240 项解析终点） |
+| 插件开发用宿主包 | `/Users/mac/.dsh/host-packages/node_modules/@deepseek-ai/`（21 个包，见「已知坑」第 3 条） |
 | Node | `24.18.1` |
 | GitHub CLI | `/opt/homebrew/bin/gh` 2.102.0（`brew install gh`） |
 
@@ -154,18 +154,34 @@ ID=<插件 dev patch 里的 id>
    `dsh --profile desktop --dump-config` 报
    `profile "desktop" is managed exclusively by the Electron application`。
    要跑 CLI 验证，请用 `headless` 或 `web`。
-3. **开发期要软链宿主包。** 插件源码 `import` 宿主包时，Node 从插件目录向上找
-   `node_modules`。缺链接就报模块找不到。补法：
+3. **宿主包解析链曾经整段失效。** 插件源码 `import` 宿主包（`@deepseek-ai/dsh-tools` 等）
+   时，Node 从插件目录向上找 `node_modules`，解析链的末端是
+   `~/.dsh/profiles/node_modules/@deepseek-ai/`。
+
+   这一层原本是 240 条指向 npx 缓存 `/Users/mac/.npm/_npx/1e7f6d9597241db0/` 的软链。
+   2026-10-03 实测该缓存已被清空，**240 条链接全部失效**。表现是
+   `--dump-config-schema` 里插件那行 `"status": "error"`，stderr 报
+   `Cannot find package '@deepseek-ai/...' imported from .../lib/index.js`。
+
+   修法是把宿主包装到一个稳定目录，再把失效链接指过去。
 
    ```sh
-   cd ~/code/dsh-plugins/plugins/hello-dsh
-   mkdir -p node_modules/@deepseek-ai
-   for p in dsh-tools schemastery cordis dsh-session; do
-     ln -sfn ~/.dsh/profiles/node_modules/@deepseek-ai/$p node_modules/@deepseek-ai/$p
-   done
+   # ① 版本必须对齐 App 内置版本。查法：
+   #    读 app.asar/dsh/node_modules/@deepseek-ai/<包>/package.json
+   mkdir -p ~/.dsh/host-packages && cd ~/.dsh/host-packages
+   npm install --no-audit --no-fund \
+     @deepseek-ai/cordis@4.0.4 @deepseek-ai/schemastery@3.18.4 \
+     @deepseek-ai/dsh-tools@0.2.0-rc.2 @deepseek-ai/dsh-session@0.2.0-rc.2
+
+   # ② 只替换失效的链接，已有的有效路径不动
+   SRC=~/.dsh/host-packages/node_modules/@deepseek-ai
+   DST=~/.dsh/profiles/node_modules/@deepseek-ai
+   for p in "$SRC"/*; do n=$(basename "$p"); [ -e "$DST/$n" ] || { rm -f "$DST/$n"; ln -s "$p" "$DST/$n"; }; done
    ```
 
-   正式安装后不需要这样做：pnpm 会把包放进 `~/.dsh/profiles/<profile>/node_modules/`。
+   验证：`cd ~/.dsh/profiles && node --input-type=module -e "await import('@deepseek-ai/schemastery')"`。
+
+   注意 npx 缓存不是唯一会消失的东西。这层链接只要断了，插件的 import 就全断。
 4. **`--patch` 里的相对路径锚定在 patch 文件旁。** 所以 `dev.patch.yml` 写
    `name: ./lib/index.js` 就能指向源文件。改代码不用重装，也不用打包。
 5. **不要手写 profile 文件。** 不要直接改 `~/.dsh/profiles/<profile>/package.json`、
