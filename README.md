@@ -13,6 +13,7 @@ plugins/                          所有插件。一个目录 = 一个独立 npm
 .agents/skills/                   项目级技能，DSH 自动扫描
 .agents/skills.lock.json          技能的来源、版本与校验和
 docs/dsh-notes.md                 本机实测细节：环境、验证回路、已知坑
+docs/codex-login-handoff.md       进行中任务交接：Codex 订阅登录插件
 docs/third-party/                 第三方内容的许可证与归属
 AGENTS.md                         给 Agent 的工作区总纲
 ```
